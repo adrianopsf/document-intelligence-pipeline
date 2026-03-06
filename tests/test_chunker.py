@@ -1,6 +1,6 @@
 """Chunker unit tests."""
 
-from docai.services.chunker import chunk_pages, TextChunk
+from docai.services.chunker import TextChunk, chunk_pages
 from docai.services.ocr import PageText
 
 
@@ -9,7 +9,9 @@ class TestChunker:
         assert chunk_pages([]) == []
 
     def test_single_page_chunking(self) -> None:
-        pages = [PageText(page_number=1, text="Hello world. This is a test document.", method="native")]
+        pages = [
+            PageText(page_number=1, text="Hello world. This is a test document.", method="native")
+        ]
         chunks = chunk_pages(pages, chunk_size=20, overlap=5)
 
         assert len(chunks) >= 1

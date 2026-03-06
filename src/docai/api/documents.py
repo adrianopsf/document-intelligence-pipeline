@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import asyncio
-import shutil
 import uuid
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.config import settings
 from docai.core.errors import DocumentNotFoundError, UploadError
@@ -24,6 +22,9 @@ from docai.schemas.document import (
     UploadResponse,
 )
 from docai.services.pipeline import run_pipeline
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = get_logger(__name__)
 
@@ -63,7 +64,8 @@ async def upload_document(
 
     content_type = file.content_type or "application/octet-stream"
     if content_type not in ALLOWED_TYPES:
-        raise UploadError(f"Unsupported file type: {content_type}. Allowed: {', '.join(ALLOWED_TYPES)}")
+        allowed = ", ".join(ALLOWED_TYPES)
+        raise UploadError(f"Unsupported file type: {content_type}. Allowed: {allowed}")
 
     # Read and validate size
     content = await file.read()
@@ -101,7 +103,7 @@ async def upload_document(
     return UploadResponse(
         document_id=doc_id,
         job_id=job_id,
-        filename=file.filename,
+        filename=safe_filename,
     )
 
 

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from docai.core.logging import get_logger
-from docai.services.ocr import PageText
+
+if TYPE_CHECKING:
+    from docai.services.ocr import PageText
 
 logger = get_logger(__name__)
 

@@ -1,7 +1,7 @@
 """FastAPI application entry point."""
 
-from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,7 +35,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="Production-grade Document Intelligence Pipeline with OCR, RAG, and structured extraction.",
+    description=(
+        "Production-grade Document Intelligence Pipeline"
+        " with OCR, RAG, and structured extraction."
+    ),
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,

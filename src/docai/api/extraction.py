@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from docai.core.errors import DocumentNotFoundError
 from docai.database import get_db
 from docai.models.extraction import ExtractedField
 from docai.schemas.extraction import ExtractionResultOut, ExtractedFieldOut
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/extraction", tags=["extraction"])
 

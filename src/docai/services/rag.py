@@ -6,9 +6,9 @@ Handles query processing, semantic search, context assembly, and grounded answer
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.core.llm import llm_completion
 from docai.core.logging import get_logger
@@ -17,16 +17,23 @@ from docai.schemas.rag import RagQueryResponse, SourceChunk
 from docai.services.embedder import embed_query
 from docai.services.vector_store import search_similar
 
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+
 logger = get_logger(__name__)
 
-RAG_SYSTEM_PROMPT = """You are a document analysis assistant. Answer questions based ONLY on the provided context chunks.
-
-Rules:
-1. Only use information from the provided context
-2. If the answer is not in the context, say "I could not find this information in the provided documents."
-3. Cite your sources by referencing page numbers when available
-4. Be precise and factual
-5. If the question is in Portuguese, answer in Portuguese. If in English, answer in English."""
+RAG_SYSTEM_PROMPT = (
+    "You are a document analysis assistant. "
+    "Answer questions based ONLY on the provided context chunks.\n\n"
+    "Rules:\n"
+    "1. Only use information from the provided context\n"
+    '2. If the answer is not in the context, say "I could not find this information'
+    ' in the provided documents."\n'
+    "3. Cite your sources by referencing page numbers when available\n"
+    "4. Be precise and factual\n"
+    "5. If the question is in Portuguese, answer in Portuguese. "
+    "If in English, answer in English."
+)
 
 RAG_PROMPT = """Based on the following document excerpts, answer the question.
 

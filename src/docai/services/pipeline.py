@@ -6,11 +6,11 @@ Stages: OCR → Classify → Chunk → Embed → Extract → Complete
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.core.errors import PipelineError
 from docai.core.logging import get_logger
@@ -23,6 +23,9 @@ from docai.services.embedder import embed_texts
 from docai.services.extractor import extract_fields
 from docai.services.ocr import extract_text
 from docai.services.vector_store import upsert_chunks
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = get_logger(__name__)
 
@@ -76,7 +79,7 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
 
     try:
         # Mark job as processing
-        job.started_at = datetime.now(timezone.utc)
+        job.started_at = datetime.now(UTC)
         await _update_job(db, job, "ocr", 10)
         await _log_audit(db, document_id, job_id, "pipeline_started", "init")
 
@@ -176,7 +179,7 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
         job.status = "completed"
         job.progress_pct = 100
         job.current_stage = "complete"
-        job.completed_at = datetime.now(timezone.utc)
+        job.completed_at = datetime.now(UTC)
         await _log_audit(db, document_id, job_id, "pipeline_complete", "complete")
 
         await db.commit()
@@ -190,4 +193,4 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
         await _log_audit(db, document_id, job_id, "pipeline_failed",
                          job.current_stage, str(e))
         await db.commit()
-        raise PipelineError(job.current_stage or "unknown", str(e))
+        raise PipelineError(job.current_stage or "unknown", str(e)) from e

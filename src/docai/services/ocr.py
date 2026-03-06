@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import abc
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import fitz  # PyMuPDF
 import pytesseract
@@ -18,6 +18,9 @@ from PIL import Image
 
 from docai.config import settings
 from docai.core.logging import get_logger
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = get_logger(__name__)
 

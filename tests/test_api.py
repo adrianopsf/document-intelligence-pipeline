@@ -1,14 +1,7 @@
 """API endpoint integration tests using FastAPI TestClient."""
 
-import os
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
 from fastapi.testclient import TestClient
 
-# Avoid redefining anyio_backend fixture if not needed, 
-# but we can leave it out since TestClient is sync.
 
 class TestHealthEndpoint:
     def test_health_returns_ok(self) -> None:
@@ -19,7 +12,7 @@ class TestHealthEndpoint:
 
         assert response.status_code == 200
         data = response.json()
-        # Status is "healthy" when all deps ok, or "degraded" when qdrant/postgres not available in test
+        # Status is "healthy" when all deps ok, or "degraded" in test environment
         assert data["status"] in ("healthy", "degraded")
         assert "version" in data
         assert "checks" in data

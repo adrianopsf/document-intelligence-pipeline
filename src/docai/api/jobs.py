@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.core.errors import JobNotFoundError
 from docai.database import get_db
 from docai.models.job import ProcessingJob
 from docai.schemas.job import JobOut
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 

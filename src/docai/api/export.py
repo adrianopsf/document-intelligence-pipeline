@@ -5,16 +5,19 @@ from __future__ import annotations
 import csv
 import io
 import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.core.errors import DocumentNotFoundError
 from docai.database import get_db
 from docai.models.document import Document, DocumentPage
 from docai.models.extraction import ExtractedField
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/export", tags=["export"])
 

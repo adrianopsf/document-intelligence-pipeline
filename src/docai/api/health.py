@@ -1,11 +1,17 @@
 """Health check endpoint."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.config import settings
 from docai.database import get_db
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(tags=["health"])
 
@@ -24,6 +30,7 @@ async def healthcheck(db: AsyncSession = Depends(get_db)) -> dict:
     # Check Qdrant
     try:
         from qdrant_client import QdrantClient
+
         client = QdrantClient(host=settings.qdrant_host, port=settings.qdrant_port, timeout=3)
         client.get_collections()
         checks["qdrant"] = "ok"

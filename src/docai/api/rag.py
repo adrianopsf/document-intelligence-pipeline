@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.database import get_db
 from docai.schemas.rag import RagQueryRequest, RagQueryResponse
 from docai.services.rag import query_documents
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/rag", tags=["rag"])
 

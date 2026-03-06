@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import uuid
-
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance,
@@ -64,7 +62,7 @@ def upsert_chunks(
             },
         )
         for i, (cid, emb, text, pages) in enumerate(
-            zip(chunk_ids, embeddings, chunk_texts, page_numbers_list)
+            zip(chunk_ids, embeddings, chunk_texts, page_numbers_list, strict=True)
         )
     ]
 
