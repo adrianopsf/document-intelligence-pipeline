@@ -2,7 +2,7 @@
 
 # 📄 Document Intelligence Pipeline
 
-[![CI](https://github.com/YOUR_USERNAME/document-intelligence-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/document-intelligence-pipeline/actions)
+[![CI](https://github.com/adrianopsf/document-intelligence-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/adrianopsf/document-intelligence-pipeline/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -76,12 +76,15 @@ Document Upload → OCR/Text Extraction → Classification → Chunking → Embe
 
 ```bash
 # Clone
-git clone https://github.com/YOUR_USERNAME/document-intelligence-pipeline.git
+git clone https://github.com/adrianopsf/document-intelligence-pipeline.git
 cd document-intelligence-pipeline
 
 # Configure
 cp .env.example .env
 # Edit .env with your LLM API key (OpenAI, Ollama, etc.)
+
+# Generate sample PDFs for testing
+make samples
 
 # Start everything
 docker-compose up --build -d

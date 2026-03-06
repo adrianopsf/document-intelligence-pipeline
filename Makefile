@@ -42,3 +42,6 @@ docker-logs: ## Tail Docker logs
 clean: ## Clean build artifacts
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; \
 	rm -rf .pytest_cache .mypy_cache .coverage htmlcov dist build *.egg-info
+
+samples: ## Generate sample PDF documents for demo/testing
+	uv run python data/samples/generate_samples.py

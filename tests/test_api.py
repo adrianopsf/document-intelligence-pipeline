@@ -19,8 +19,10 @@ class TestHealthEndpoint:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["status"] == "healthy"
+        # Status is "healthy" when all deps ok, or "degraded" when qdrant/postgres not available in test
+        assert data["status"] in ("healthy", "degraded")
         assert "version" in data
+        assert "checks" in data
 
 
 class TestDocumentEndpoints:

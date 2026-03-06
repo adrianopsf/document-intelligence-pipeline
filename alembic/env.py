@@ -1,10 +1,10 @@
 """Alembic environment configuration for async SQLAlchemy."""
 
+import os
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import pool
-from sqlalchemy.engine import Connection
 from sqlalchemy import create_engine
 
 # Import all models so Alembic can detect them
@@ -14,6 +14,10 @@ from docai.models import *  # noqa: F401, F403
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# Allow DATABASE_URL_SYNC env var to override alembic.ini value
+db_url = os.getenv("DATABASE_URL_SYNC") or config.get_main_option("sqlalchemy.url")
+config.set_main_option("sqlalchemy.url", db_url)
 
 target_metadata = Base.metadata
 

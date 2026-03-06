@@ -42,6 +42,7 @@ async def extract_fields(text: str, document_type: str | None = None) -> Structu
     truncated = text[:8000] if len(text) > 8000 else text
     prompt = EXTRACTION_PROMPT.format(text=truncated)
 
+    raw = ""
     try:
         raw = await llm_json_completion(prompt)
         data = json.loads(raw)
@@ -55,7 +56,7 @@ async def extract_fields(text: str, document_type: str | None = None) -> Structu
         return result
 
     except json.JSONDecodeError:
-        logger.error("extraction_json_parse_error", raw_length=len(raw) if 'raw' in dir() else 0)
+        logger.error("extraction_json_parse_error", raw_length=len(raw))
         return StructuredExtractionSchema(document_type=document_type)
     except Exception as e:
         logger.error("extraction_error", error=str(e))

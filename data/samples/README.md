@@ -2,20 +2,39 @@
 
 This directory contains synthetic sample documents for demo and testing purposes.
 
-To add sample documents for testing:
-1. Place PDF or image files in this directory
-2. They will be available inside Docker containers at `/app/data/samples/`
+## Generating Samples
 
-## Creating Synthetic Test Documents
+Run the included generator script to create ready-to-use PDF samples:
 
-The test suite generates synthetic PDFs automatically via PyMuPDF.
-See `tests/conftest.py` for the `sample_pdf_path` fixture.
+```bash
+# Requires project dependencies to be installed
+uv run python data/samples/generate_samples.py
+
+# Or with plain Python (after uv sync)
+python data/samples/generate_samples.py
+```
+
+This creates three PDF files:
+- `sample_contract.pdf` — Contract with parties, value, dates, clauses
+- `sample_invoice.pdf` — Invoice with line items, taxes, total
+- `sample_financial_report.pdf` — DRE with revenue, expenses, profit
 
 ## Manual Testing
 
-Upload sample documents via the API:
+Upload via the web UI at `http://localhost:8000`, or via curl:
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/documents/upload \
-  -F "file=@data/samples/your_document.pdf"
+  -F "file=@data/samples/sample_contract.pdf"
 ```
+
+## In Docker
+
+The `data/samples/` directory is copied into the container at `/app/data/samples/`.
+Run the generator before `docker-compose up` to have samples available immediately,
+or exec into the container after startup:
+
+```bash
+docker-compose exec app python data/samples/generate_samples.py
+```
+

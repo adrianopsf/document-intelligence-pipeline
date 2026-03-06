@@ -15,7 +15,7 @@ The fastest way to get everything running:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/document-intelligence-pipeline.git
+git clone https://github.com/adrianopsf/document-intelligence-pipeline.git
 cd document-intelligence-pipeline
 
 # 2. Configure environment

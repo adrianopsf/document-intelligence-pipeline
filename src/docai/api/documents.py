@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from docai.config import settings
 from docai.core.errors import DocumentNotFoundError, UploadError
+from docai.core.logging import get_logger
 from docai.database import async_session, get_db
 from docai.models.document import Document
 from docai.models.job import ProcessingJob
@@ -23,6 +24,8 @@ from docai.schemas.document import (
     UploadResponse,
 )
 from docai.services.pipeline import run_pipeline
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -40,8 +43,8 @@ async def _run_pipeline_bg(job_id: uuid.UUID) -> None:
     async with async_session() as session:
         try:
             await run_pipeline(job_id, session)
-        except Exception:
-            pass  # Pipeline handles its own error logging
+        except Exception as exc:
+            logger.error("background_pipeline_failed", job_id=str(job_id), error=str(exc))
 
 
 @router.post("/upload", response_model=UploadResponse, status_code=201)
@@ -52,6 +55,11 @@ async def upload_document(
 ) -> UploadResponse:
     if not file.filename:
         raise UploadError("No filename provided")
+
+    # Sanitize filename — strip any path components to prevent path traversal
+    safe_filename = Path(file.filename).name
+    if not safe_filename:
+        raise UploadError("Invalid filename")
 
     content_type = file.content_type or "application/octet-stream"
     if content_type not in ALLOWED_TYPES:
@@ -66,13 +74,13 @@ async def upload_document(
     doc_id = uuid.uuid4()
     save_dir = settings.upload_path / str(doc_id)
     save_dir.mkdir(parents=True, exist_ok=True)
-    file_path = save_dir / file.filename
+    file_path = save_dir / safe_filename
     file_path.write_bytes(content)
 
     # Create document record
     doc = Document(
         id=doc_id,
-        filename=file.filename,
+        filename=safe_filename,
         file_path=str(file_path),
         file_size=len(content),
         mime_type=content_type,

@@ -5,7 +5,7 @@ description = "Production-grade Document Intelligence Pipeline with OCR, RAG, an
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [{ name = "adrianopsf", email = "adrianopsf@github.com" }]
 keywords = ["document-ai", "ocr", "rag", "nlp", "fastapi", "pipeline"]
 classifiers = [
     "Development Status :: 4 - Beta",
