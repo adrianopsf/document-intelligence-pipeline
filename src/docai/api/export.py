@@ -35,9 +35,11 @@ async def export_json(
         raise DocumentNotFoundError(str(document_id))
 
     # Fetch pages
-    stmt = select(DocumentPage).where(
-        DocumentPage.document_id == document_id
-    ).order_by(DocumentPage.page_number)
+    stmt = (
+        select(DocumentPage)
+        .where(DocumentPage.document_id == document_id)
+        .order_by(DocumentPage.page_number)
+    )
     result = await db.execute(stmt)
     pages = result.scalars().all()
 

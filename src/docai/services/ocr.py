@@ -38,8 +38,7 @@ class PageText:
 
 class OCREngine(abc.ABC):
     @abc.abstractmethod
-    def extract(self, file_path: Path) -> list[PageText]:
-        ...
+    def extract(self, file_path: Path) -> list[PageText]: ...
 
 
 class PyMuPDFEngine(OCREngine):
@@ -51,11 +50,13 @@ class PyMuPDFEngine(OCREngine):
         for page_num in range(len(doc)):
             page = doc[page_num]
             text = page.get_text("text").strip()
-            pages.append(PageText(
-                page_number=page_num + 1,
-                text=text,
-                method="native",
-            ))
+            pages.append(
+                PageText(
+                    page_number=page_num + 1,
+                    text=text,
+                    method="native",
+                )
+            )
         doc.close()
         return pages
 
@@ -73,12 +74,14 @@ class TesseractEngine(OCREngine):
             text = " ".join(w for w in data["text"] if w.strip())
             confs = [int(c) for c in data["conf"] if int(c) > 0]
             avg_conf = sum(confs) / len(confs) if confs else 0.0
-            pages.append(PageText(
-                page_number=1,
-                text=text,
-                method="ocr",
-                confidence=avg_conf / 100.0,
-            ))
+            pages.append(
+                PageText(
+                    page_number=1,
+                    text=text,
+                    method="ocr",
+                    confidence=avg_conf / 100.0,
+                )
+            )
         elif suffix == ".pdf":
             doc = fitz.open(str(file_path))
             for page_num in range(len(doc)):
@@ -89,12 +92,14 @@ class TesseractEngine(OCREngine):
                 text = " ".join(w for w in data["text"] if w.strip())
                 confs = [int(c) for c in data["conf"] if int(c) > 0]
                 avg_conf = sum(confs) / len(confs) if confs else 0.0
-                pages.append(PageText(
-                    page_number=page_num + 1,
-                    text=text,
-                    method="ocr",
-                    confidence=avg_conf / 100.0,
-                ))
+                pages.append(
+                    PageText(
+                        page_number=page_num + 1,
+                        text=text,
+                        method="ocr",
+                        confidence=avg_conf / 100.0,
+                    )
+                )
             doc.close()
 
         return pages

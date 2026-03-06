@@ -36,8 +36,7 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description=(
-        "Production-grade Document Intelligence Pipeline"
-        " with OCR, RAG, and structured extraction."
+        "Production-grade Document Intelligence Pipeline with OCR, RAG, and structured extraction."
     ),
     docs_url="/docs",
     redoc_url="/redoc",

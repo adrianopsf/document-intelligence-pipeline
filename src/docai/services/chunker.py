@@ -82,11 +82,13 @@ def chunk_pages(
             if seg_start < chunk_end and seg_end > chunk_start:
                 chunk_pages_set.add(page_num)
 
-        chunks.append(TextChunk(
-            index=idx,
-            text=chunk_text.strip(),
-            page_numbers=sorted(chunk_pages_set),
-        ))
+        chunks.append(
+            TextChunk(
+                index=idx,
+                text=chunk_text.strip(),
+                page_numbers=sorted(chunk_pages_set),
+            )
+        )
         idx += 1
 
         # Advance with overlap

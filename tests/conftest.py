@@ -27,6 +27,7 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
 @pytest_asyncio.fixture(autouse=True, scope="session")
 async def setup_db() -> AsyncGenerator[None, None]:
     from docai.database import init_db
+
     await init_db()
     yield
 
@@ -35,6 +36,7 @@ async def setup_db() -> AsyncGenerator[None, None]:
 def sample_pdf_path(tmp_path: Path) -> Path:
     """Create a minimal synthetic PDF for testing."""
     import fitz
+
     doc = fitz.open()
     page = doc.new_page()
     page.insert_text(

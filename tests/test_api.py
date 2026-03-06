@@ -34,9 +34,7 @@ class TestDocumentEndpoints:
         from docai.main import app
 
         with TestClient(app) as client:
-            response = client.get(
-                "/api/v1/documents/00000000-0000-0000-0000-000000000000"
-            )
+            response = client.get("/api/v1/documents/00000000-0000-0000-0000-000000000000")
 
         assert response.status_code == 404
 
@@ -46,9 +44,7 @@ class TestJobEndpoints:
         from docai.main import app
 
         with TestClient(app) as client:
-            response = client.get(
-                "/api/v1/jobs/00000000-0000-0000-0000-000000000000"
-            )
+            response = client.get("/api/v1/jobs/00000000-0000-0000-0000-000000000000")
 
         assert response.status_code == 404
 

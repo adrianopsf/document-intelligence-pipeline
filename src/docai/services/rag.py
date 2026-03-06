@@ -87,16 +87,16 @@ async def query_documents(
     for i, chunk in enumerate(results):
         doc_name = doc_names.get(chunk["document_id"], "Unknown")
         page_info = f" (pages: {chunk['page_numbers']})" if chunk["page_numbers"] else ""
-        context_parts.append(
-            f"[Source {i + 1} - {doc_name}{page_info}]\n{chunk['text']}"
+        context_parts.append(f"[Source {i + 1} - {doc_name}{page_info}]\n{chunk['text']}")
+        sources.append(
+            SourceChunk(
+                chunk_text=chunk["text"][:500],
+                page_numbers=chunk["page_numbers"],
+                document_id=uuid.UUID(chunk["document_id"]),
+                document_name=doc_name,
+                score=chunk["score"],
+            )
         )
-        sources.append(SourceChunk(
-            chunk_text=chunk["text"][:500],
-            page_numbers=chunk["page_numbers"],
-            document_id=uuid.UUID(chunk["document_id"]),
-            document_name=doc_name,
-            score=chunk["score"],
-        ))
 
     context = "\n\n---\n\n".join(context_parts)
 

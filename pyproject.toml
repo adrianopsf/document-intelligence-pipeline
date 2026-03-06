@@ -66,6 +66,12 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "TCH"]
+ignore = [
+    "B008",  # FastAPI uses Depends() in argument defaults intentionally
+]
+
+[tool.ruff.lint.flake8-type-checking]
+exempt-modules = ["uuid"]  # uuid used at runtime by FastAPI for path param coercion
 
 [tool.mypy]
 python_version = "3.12"

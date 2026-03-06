@@ -52,12 +52,15 @@ class TestChunker:
 class TestClassifier:
     def test_contract_classification(self) -> None:
         from docai.services.classifier import classify_document
+
         assert classify_document("contrato cláusula vigência partes") == "contract"
 
     def test_invoice_classification(self) -> None:
         from docai.services.classifier import classify_document
+
         assert classify_document("nota fiscal valor total quantidade") == "invoice"
 
     def test_unknown_classification(self) -> None:
         from docai.services.classifier import classify_document
+
         assert classify_document("xyzzy random gibberish") == "other"

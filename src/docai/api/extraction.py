@@ -10,7 +10,7 @@ from sqlalchemy import select
 
 from docai.database import get_db
 from docai.models.extraction import ExtractedField
-from docai.schemas.extraction import ExtractionResultOut, ExtractedFieldOut
+from docai.schemas.extraction import ExtractedFieldOut, ExtractionResultOut
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession

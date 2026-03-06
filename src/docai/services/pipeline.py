@@ -33,8 +33,12 @@ STAGES = ["ocr", "classify", "chunk", "embed", "extract", "complete"]
 
 
 async def _log_audit(
-    db: AsyncSession, document_id: uuid.UUID, job_id: uuid.UUID, action: str,
-    stage: str | None = None, detail: str | None = None,
+    db: AsyncSession,
+    document_id: uuid.UUID,
+    job_id: uuid.UUID,
+    action: str,
+    stage: str | None = None,
+    detail: str | None = None,
 ) -> None:
     log = AuditLog(
         document_id=document_id,
@@ -48,7 +52,10 @@ async def _log_audit(
 
 
 async def _update_job(
-    db: AsyncSession, job: ProcessingJob, stage: str, progress: int,
+    db: AsyncSession,
+    job: ProcessingJob,
+    stage: str,
+    progress: int,
     status: str = "processing",
 ) -> None:
     job.current_stage = stage
@@ -100,8 +107,9 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
 
         await db.flush()
         await _update_job(db, job, "classify", 25)
-        await _log_audit(db, document_id, job_id, "ocr_complete", "ocr",
-                         f"Extracted {len(pages)} pages")
+        await _log_audit(
+            db, document_id, job_id, "ocr_complete", "ocr", f"Extracted {len(pages)} pages"
+        )
 
         # --- Stage 2: Classify ---
         logger.info("pipeline_stage", stage="classify", document_id=str(document_id))
@@ -109,8 +117,7 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
         doc_type = classify_document(full_text)
         doc.document_type = doc_type
         await _update_job(db, job, "chunk", 35)
-        await _log_audit(db, document_id, job_id, "classified", "classify",
-                         f"Type: {doc_type}")
+        await _log_audit(db, document_id, job_id, "classified", "classify", f"Type: {doc_type}")
 
         # --- Stage 3: Chunk ---
         logger.info("pipeline_stage", stage="chunk", document_id=str(document_id))
@@ -132,8 +139,9 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
 
         await db.flush()
         await _update_job(db, job, "embed", 50)
-        await _log_audit(db, document_id, job_id, "chunked", "chunk",
-                         f"Created {len(chunks)} chunks")
+        await _log_audit(
+            db, document_id, job_id, "chunked", "chunk", f"Created {len(chunks)} chunks"
+        )
 
         # --- Stage 4: Embed + Index ---
         logger.info("pipeline_stage", stage="embed", document_id=str(document_id))
@@ -153,8 +161,9 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
             )
 
         await _update_job(db, job, "extract", 70)
-        await _log_audit(db, document_id, job_id, "embedded", "embed",
-                         f"Indexed {len(chunks)} vectors")
+        await _log_audit(
+            db, document_id, job_id, "embedded", "embed", f"Indexed {len(chunks)} vectors"
+        )
 
         # --- Stage 5: Structured Extraction ---
         logger.info("pipeline_stage", stage="extract", document_id=str(document_id))
@@ -162,17 +171,18 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
             extraction = await extract_fields(full_text, document_type=doc_type)
             for field_name, field_value in extraction.model_dump().items():
                 if field_value is not None:
-                    db.add(ExtractedField(
-                        document_id=document_id,
-                        field_name=field_name,
-                        field_value=str(field_value),
-                    ))
+                    db.add(
+                        ExtractedField(
+                            document_id=document_id,
+                            field_name=field_name,
+                            field_value=str(field_value),
+                        )
+                    )
             await db.flush()
             await _log_audit(db, document_id, job_id, "extracted", "extract")
         except Exception as e:
             logger.warning("extraction_skipped", error=str(e))
-            await _log_audit(db, document_id, job_id, "extraction_skipped", "extract",
-                             str(e))
+            await _log_audit(db, document_id, job_id, "extraction_skipped", "extract", str(e))
 
         # --- Complete ---
         doc.status = "processed"
@@ -190,7 +200,6 @@ async def run_pipeline(job_id: uuid.UUID, db: AsyncSession) -> None:
         job.status = "failed"
         job.error_message = str(e)
         doc.status = "failed"
-        await _log_audit(db, document_id, job_id, "pipeline_failed",
-                         job.current_stage, str(e))
+        await _log_audit(db, document_id, job_id, "pipeline_failed", job.current_stage, str(e))
         await db.commit()
         raise PipelineError(job.current_stage or "unknown", str(e)) from e
